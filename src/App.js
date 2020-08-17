@@ -126,7 +126,6 @@ break;
 if (flag){
 basketItems.push({name:product, count:1})
 }
-console.log(basketItems)
 }
 
 
@@ -199,7 +198,7 @@ this.filterList = this.filterList.bind(this)
 
 setInterval(() => {
   this.filterList(this.state.filter, this.props.array)
-}, 0);
+}, 1000);
 
     const ListItems = this.state.list.map((element =>
     <li key={element} onClick = {() => this.props.onClick(element)}>
