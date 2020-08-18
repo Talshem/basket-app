@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 
 
@@ -14,7 +14,7 @@ class Header extends React.Component {
   }
 }
 
-    
+
 
 class Footer extends React.Component {
   render() {
@@ -25,16 +25,69 @@ class Footer extends React.Component {
   }
 }
 
+class SearchArea extends React.Component {
+    constructor(props) {
+    super(props);
+    this.state = {value: ''};
+    }
 
 
-
-class Main extends React.Component {
-constructor(props){
-  super(props)
-  this.state={array: " "}
-}
+  handleChange = (event) => {
+    this.setState({value: event.target.value});
+  }
 
   render() {
+    const myFunction = (e) => {
+    this.props.filter(e)
+    }
+
+const input = <input
+        onChange={this.handleChange}
+        type="text"
+        value={this.state.value}
+        id="myInput"
+        className="SearchArea"
+        onKeyUp={myFunction(this.state.value)}
+        placeholder="Search for a product..."></input>
+      
+
+
+    return (
+<div>
+{input}
+</div>
+    );
+  }
+}
+
+
+function App() {
+
+const list = [];
+
+function pass(e){
+  list.shift();
+  list.push(e)
+  return list;
+}
+
+  return (
+    <div className="App">
+      <Header/>
+      <SearchArea filter={(e) => pass(e)}/>
+      <Main filter={pass()}/>
+      <Footer/>
+    </div>
+  );
+}
+
+class Main extends React.Component {
+
+
+
+render(){
+  
+
 
         const items = [
       {name: 'Strawberry'},
@@ -71,71 +124,25 @@ break;
 if (flag){
 basketItems.push({name:product, count:1})
 }
-console.log(basketItems)
 }
 
 
-const productsRemove = (product) => {
-let flag = true;
-for (let item of basketItems){
-if (item.name === product){
-flag = false;
-item.count++;
-break;
-}
-}}
 
     return (
 <main className="Main">
-  <GroceriesList array={items} products={productsAdd.bind(this)}/>
-  <BasketList onChange={basketItems} products={productsRemove.bind(this)}/>
+  <GroceriesList array={items} products={(e) => productsAdd(e)} filter={this.props.filter} />
+  <BasketList array={basketItems} filter={this.props.filter}/>
 </main>
     );
   }
 }
 
 
-
-class BasketList extends React.Component  {
-
-render(){
-
-    const handleClick = (name) => {
-    this.props.products(name)
-    }
-
-    const productsRemove = (product) => {
-      let basket = this.props.onChange;
-      for (let item of basket){
-      if (item.name === product.name){
-      if (item.count > 0){
-      item.count--;
-      }
-      if (item.count == 0){
-basket.splice(basket.indexOf(item), 1)
-  ;}
-
-      }}
-    }
-
-
-    return (
-<div className="BasketList">
-<h2>Basket:</h2>
-  <BasketItem onChange={this.props.onChange} onClick={handleClick.bind(this), productsRemove.bind(this)}/>
-</div>
-    );
-  }
-}
-
-
 class GroceriesList extends React.Component {
-constructor(props){
-super(props)
-}
+
+
 
   render() {
-
     const handleClick = (name) => {
     this.props.products(name)
     }
@@ -143,7 +150,88 @@ super(props)
     return (
 <div className="GroceriesList">
   <h2>Groceries:</h2>
-  <GroceryItem array={this.props.array} onClick={handleClick.bind(this)}/>
+  <GroceryItem array={this.props.array} onClick={(e) => handleClick(e)} filter={this.props.filter} />
+</div>
+    );
+  }
+}
+
+
+
+class GroceryItem extends React.Component {
+constructor(props){
+super(props)
+this.state={filter: this.props.filter,
+            list: [],
+            array: this.props.array}
+}
+
+  static getDerivedStateFromProps(props, state) {
+    return {filter: props.filter, array:props.array}
+  }
+
+     componentDidMount() {
+    setTimeout(() => {
+     this.setState({filter: this.props.filter, array:this.props.array})
+    }, 100)
+  }
+
+  componentDidUpdate() {
+    setTimeout(() => {
+    this.setState({filter: this.props.filter, array:this.props.array})
+    }, 100);
+  }
+   
+    
+  render() {
+
+const list = [];
+const x = this.state.filter.toString().toUpperCase();
+
+for (let i = 0; i < this.state.array.length; i++){
+if (this.state.array[i].name.toUpperCase().indexOf(x) > -1){
+list.push(
+    <li key={this.state.array[i].name}  onClick = {() => this.props.onClick(this.state.array[i].name)}>
+    <button className="plusButton">+</button>
+    {this.state.array[i].count} {this.state.array[i].name}</li> 
+)
+   }}
+
+
+    return (
+<ul className="GroceryItem">
+{list}
+</ul> 
+    )
+}
+}
+
+
+class BasketList extends React.Component  {
+
+render(){
+
+
+    const productsRemove = (product) => {
+      let basket = this.props.array;
+      for (let item of basket){
+      if (item.name === product){
+      if (item.count > 0){
+      item.count--;
+      }
+      if (item.count === 0){
+basket.splice(basket.indexOf(item), 1)
+
+  ;}
+      }}
+    }
+
+
+
+    return (
+<div className="BasketList">
+<h2>Basket:</h2>
+  <BasketItem  filter={this.props.filter} array={this.props.array} onClick={(e) => productsRemove(e)}/>
 </div>
     );
   }
@@ -153,18 +241,45 @@ super(props)
 class BasketItem extends React.Component {
 constructor(props){
 super(props)
-this.state={array: this.props.onChange}
-}
+this.state={array: this.props.array,
+            filter: this.props.filter,
+            list: []
+            }}
 
+            
+  static getDerivedStateFromProps(props, state) {
+    return {filter: props.filter, array: props.array}
+  }
 
-render(){
+   componentDidMount() {
+    setTimeout(() => {
+     this.setState({filter: this.props.filter, array:this.props.array})
+    }, 100)
+  }
+
+  componentDidUpdate() {
+    setTimeout(() => {
+    this.setState({filter: this.props.filter, array:this.props.array})
+    }, 100);
+  }
   
-setInterval(() => {this.setState({array: this.props.onChange})}, 100);
 
-const list = this.state.array.map((element =>
-    <li key={element.name}  onClick = {() => this.props.onClick(element)}>
-    <button>-</button>
-    {element.count} {element.name}</li> ))
+   
+render(){
+
+
+const list= [];
+const x = this.state.filter.toString().toUpperCase();
+
+for (let i = 0; i < this.state.array.length; i++){
+if (this.state.array[i].name.toUpperCase().indexOf(x) > -1){
+list.push(
+    <li key={this.state.array[i].name}  onClick = {() => this.props.onClick(this.state.array[i].name)}>
+    <button className="minusButton">-</button>
+    {this.state.array[i].count} {this.state.array[i].name}</li> 
+)
+   }}
+
 
 
     return (
@@ -176,48 +291,5 @@ const list = this.state.array.map((element =>
   }
 }
 
-class GroceryItem extends React.Component {
-constructor(props){
-super(props)
-}
-
-  render() {
-
-    const GroceriesArray = [];
-    this.props.array.forEach(element => GroceriesArray.push(element.name))
-    const ListItems = GroceriesArray.map((element =>
-    <li key={element} onClick = {() => this.props.onClick(element)}>
-    <button>+</button>
-    {element}</li>))
-
-    return (
-<ul className="GroceryItem">
-{ListItems}
-</ul> 
-    )
-}
-}
-
-
-
-
-
-
-
-
-function App() {
-  return (
-    <div className="App">
-      <Header/>
-      <Main/>
-      <Footer/>
-
-    {/*
-
-<SearchArea/>
-    */}
-    </div>
-  );
-}
 
 export default App;
