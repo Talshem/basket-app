@@ -46,6 +46,9 @@ ul {
     margin: 0px 100px 40px 60px;
 }
 
+li{
+cursor: pointer;
+}
 
 li:nth-child(2n+0){
   background:#3f3f3f;
@@ -83,6 +86,11 @@ border: solid rgb(50, 179, 71) 2px;
 
 }
 
+li:hover > .minusButton{
+background:rgb(255, 59, 59);
+border: solid rgb(255, 59, 59);
+}
+
 button:focus {
   outline:none;
   box-shadow: none;
@@ -91,6 +99,33 @@ button:focus {
 h2{
   margin-left:100px
 }
+
+.SearchArea{
+font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+width: 300px;
+margin-left: 40%;
+border-radius: 5px;
+background-color:rgb(156, 156, 156);
+font-size: 20px;
+border: 2px solid rgb(156, 156, 156);
+margin-top: 10px;
+outline:none;
+box-shadow: none;
+color:black;
+}
+
+.SearchArea:focus{
+background:rgb(226, 226, 226)
+}
+
+
+::placeholder {
+font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+color:white;
+}
+
 .ok{
-  background:black
+  background: black;
+  width:500px;
+  height:500px
 }
